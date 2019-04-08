@@ -1,0 +1,9 @@
+{
+  "parser": "babylon",
+  "trailingComma": "all",
+  "printWidth": 100,
+  "arrowParens": "always",
+  "jsxBracketSameLine": false,
+  "endOfLine": "lf",
+  "proseWrap": "always"
+}
