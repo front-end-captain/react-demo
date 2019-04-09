@@ -1,15 +1,18 @@
 
 ## Hooks
-> 不通过编写类组件的情况下，来使用状态和其他React特性的技术
+> 不通过编写类组件的情况下，可以在组件内部使用状态(state) 和其他 React 特性(生命周期，context)的技术
 
 ### 动机
 #### 组件之间的状态逻辑很难复用
 1. React 没有提供一种将可重用行为附加到组件的方式，比如去连接 store
 2. 在之前的版本中通过 `render props` 或者 `hoc` 来解决这种问题吧，但是这两种模式对组件的侵入性太强。另外，会产生组件嵌套地狱的问题。
-3. 通过 Hooks，可以抽取状态逻辑，使组件变得可测试，可重用。Hooks 允许你在不改变组件层次结构的情况下，去重用状态逻辑。
+3. 通过 Hooks，可以抽取状态逻辑，使组件变得可测试，可重用。Hooks 允许你在不改变组件层次结构的情况下，去重用状态逻辑。更好的实现关注点分离。
+**example** 使用组合，`render props`，hook 三种方式实现折叠面板
+
 #### 复杂的组件变得越来越难以理解
 1. 组件中充斥着无法管理的混乱的状态逻辑代码和各种副作用。各种不相关的逻辑代码出现在生命周期函数中。
 2. 由于状态逻辑散落在各处，所以组件变得不可测试，同时也不好进行拆分。虽然可以引入状态管理的库，但是这样带来更多的抽象，需要在不同的文件之间跳转，组件复用变得很困难。
+
 #### 类组件给开发者带来了很多困惑
 1. this 问题，事件监听的添加和移除
 2. 什么时候使用 function component, 什么时候使用 class component
@@ -17,13 +20,6 @@
 ### State Hook
 > state hook 提供了一种可以在 function component 中添加状态的方式
 
-useState 推荐一种更加细粒度的控制状态的方式，即一个状态对应一个状态设置函数，其接受的参数将作为这个状态的初始值。其返回一个长度为2的元组，第一项为当前状态，第二项为更新函数。
-
-useState 的执行顺序在每一次更新渲染时必须保持一致，否则多个 useState 调用将不会得到各自独立的状态，也会造成状态对应混乱。
-比如在条件判断中使用 hook，在循环，嵌套函数中使用 hook，都会造成 hook 执行顺序不一致的问题。
-
-##### useState 和 setState 的区别
-> useState 将 state 进行覆盖式更新，而 setState 则将状态进行合并式更新。
 
 ``` javascript
 import React, { useState } from "react";
@@ -42,6 +38,15 @@ const StateHook = () => {
 };
 
 ```
+
+`useState` 推荐一种更加细粒度的控制状态的方式，即一个状态对应一个状态设置函数，其接受的参数将作为这个状态的初始值。其返回一个长度为2的元组，第一项为当前状态，第二项为更新函数。
+
+`useState` 的执行顺序在每一次更新渲染时必须保持一致，否则多个 useState 调用将不会得到各自独立的状态，也会造成状态对应混乱。
+比如在条件判断中使用 hook，在循环，嵌套函数中使用 hook，都会造成 hook 执行顺序不一致的问题。最后导致状态的混乱。
+
+##### `useState` 和 `setState` 的区别
+> `useState` 将 `setState` 进行覆盖式更新，而 setState 则将状态进行合并式更新。
+
 ### Effect Hook
 > 数据获取，设置订阅，手动的更改 DOM，都可以称为副作用，可以将副作用分为两种，一种是需要清理的，另外一种是不需要清理的。比如网络请求，DOM 更改，日志这些副作用都不要清理。而比如定时器，事件监听。
 
@@ -81,6 +86,21 @@ const effectHook = () => {
 ### Other Hook
 
 ### Rules of Hook
-#### 在顶部使用 hook，不要使用 hook 在条件判断，循环，嵌套函数。
-#### 只在 function component 中使用 hook，或者自定义 hook 中使用 hook
-1. 不要在常规的 JavaScript 函数中使用 hook
+1. 在顶部使用 hook，不要使用 hook 在条件判断，循环，嵌套函数。
+2. 只在 function component 中使用 hook，或者自定义 hook 中使用 hook, 不要在常规的 JavaScript 函数中使用 hook
+
+### 分类
+#### DOM 修改
+比如修改文档 title, 修改 DOM 节点属性。内容
+
+#### 监听
+用户代理网络变化，窗口大小变化，jian'ting
+
+#### 表单
+
+
+**链接**
+
+[making-sense-of-react-hooks](https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889)
+[rehooks](https://rehooks.com)
+[awesome-react-hooks](https://github.com/rehooks/awesome-react-hooks)

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import useFetchData from "./useFetchDataEffect.js";
 
 const SearchResult = () => {
   const [keyword, setKeyword] = useState("react");
@@ -57,4 +58,40 @@ const SearchResult = () => {
   );
 };
 
-export default SearchResult;
+const SimpleSearchResult = () => {
+  const [keyword, setKeyword] = useState("react");
+
+  const url = `https://hn.algolia.com/api/v1/search?query=${keyword}`;
+  const { data, loading, error } = useFetchData(url, keyword);
+
+  const setQuery = (event) => {
+    const {
+      target: { value: keyword },
+    } = event;
+
+    setKeyword(keyword);
+  };
+
+  if (error.error) {
+    return <p>something wrong, {error.message}</p>;
+  }
+
+  return (
+    <>
+      <input value={keyword} onChange={setQuery} />
+      {loading ? (
+        <span>loading</span>
+      ) : (
+        <ul>
+          {data.hits.map((item) => (
+            <li key={item.objectID}>
+              <a href={item.url}>{item.title}</a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+};
+
+export { SearchResult, SimpleSearchResult };
