@@ -99,6 +99,14 @@ const effectHook = () => {
 #### 表单
 
 
+
+#### 缺点
+
+1. 不能阻止更新，定制 `shouldComponentUpdate`， 即根据 state 的改变来决定是否需要更新
+2. 错误边界捕获 使用 `try {} catch(){}` 没有 `componentDidCatch`
+3. 一个组件若有状态，则状态一旦改变，所有的子组件需要重新渲染。所以一个有状态的组件，应该是没有子组件的。**有状态的组件不做渲染，有渲染的组件没有状态**
+4. `getSnapshotBeforeUpdate` 不可以获取更新前 DOM 的快照。
+
 **链接**
 
 [making-sense-of-react-hooks](https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889)
