@@ -31,11 +31,11 @@ const Home = () => {
       <SimpleSearchResult />
       {/* <Counter initialCount={1} /> */}
 
-      {/* <Collapse>
+      <Collapse>
         <Panel title="one">content one</Panel>
         <Panel title="two">content two</Panel>
         <Panel title="three">content three</Panel>
-      </Collapse> */}
+      </Collapse>
     </HomeWrapper>
   );
 };
