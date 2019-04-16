@@ -79,26 +79,138 @@ const effectHook = () => {
 };
 ```
 
-### Context Hook
+### question
+1. 如何使用 `useEffect` 模拟 `componentDidMount` 生命周期？
+  > `useEffect` 会捕获 `state` 和 `props`, 如果 `state` 或者 `props` 不是作为 effect 的依赖，那么每一次 effect 的回调函数拿到的 `state` 或者 `props` 总是初始值，或者使用 `useRef` 来保存最新的 `state` 和 `props`. **你需要 `think in effects`，思考如何实现状态同步，而不是去响应生命周期.**
+2. 如何正确的在 `useEffect` 中去请求远端数据，其第二个参数 `[]` 是干什么的？
+3. 可以把函数作为 `useEffect` 的依赖么？
+4. 为什么会出现无限重复请求的情况?
+  > 这个通常发生于你在 effect 里做数据请求并且没有设置 effect 依赖参数的情况。没有设置依赖，effect 会在每次渲染后执行一次，然后在 effect 中更新了状态引起渲染并再次触发 effect。无限循环的发生也可能是因为你设置的依赖总是会改变。你可以通过一个一个移除的方式排查出哪个依赖导致了问题。
+5. 为什么有时候在 `useEffect` 中会拿到旧的的 `state` 和 `props`?
+  > `useEffect` 总是捕获某一次特定渲染的 `state` 和 `props`。如果想拿到最新的值，可以使用 `useRef` 或者把 `state` 和 `props` 作为 `useEffect` 的依赖列表参数。
 
-### Custom Hook
+### gist
+#### 每一次渲染都有自己的 `state` 和 `props`
+``` jsx
+function Counter() {
+  const [count, setCount] = useState(0);
 
-### Other Hook
+  // 事件处理函数属于某一次特定的 『渲染』在任意一次渲染中，props 和 state 都是保持不变的，且相互独立的，那么使用它们的任何值都是相互独立的，即使是在异步的情况下。它们都属于某一次特定的渲染。
+  const handleAlertClick = () => {
+    setTimeout(() => {
+      alert('You clicked on: ' + count);
+    }, 3000);
+  }
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+      <button onClick={handleAlertClick}>
+        Show alert
+      </button>
+    </div>
+  );
+}
+```
+
+#### 每一次渲染都有自己的 effect 函数(`useEffect`传入的回调函数称之为 effect 函数)
+``` jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  // 这里会依次输出每一次点击后的 count 值，而不是最新的 count 值
+  // 比如在 3000ms 内连续点击了 5 次，会在 3000ms 后依次输出 count 值
+  useEffect(() => {
+    setTimeout(() => {
+      console.log(`You clicked ${count} times`);
+    }, 3000);
+  });
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
+
+但是在 classComponent 中却又不同的行为
+``` jsx
+class Example extends Component {
+  state = {
+    count: 0
+  };
+  componentDidMount() {
+    setTimeout(() => {
+      console.log(`You clicked ${this.state.count} times`);
+    }, 3000);
+  }
+  // 这里总是输出最新的 count 值，而不是每一次渲染的 count 值
+  // 因为 this.state.count 总是指向最新的值，而不属于某一次特定的渲染
+  componentDidUpdate() {
+    setTimeout(() => {
+      console.log(`You clicked ${this.state.count} times`);
+    }, 3000);
+  }
+  render() {
+    return (
+      <div>
+        <p>You clicked {this.state.count} times</p>
+        <button onClick={() => this.setState({
+          count: this.state.count + 1
+        })}>
+          Click me
+        </button>
+      </div>
+    )
+  }
+}
+```
+
+也可以使用 `useEffect` 和 `useRef` 来实现 classComponent 的效果
+``` jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  // state 是不可更改的，而 ref 是可以更改的
+  // 使用一个可以更改的对象来保存最新的状态值
+  const latestCount = useRef(count);
+
+  useEffect(() => {
+    latestCount.current = count;
+    setTimeout(() => {
+      console.log(`You clicked ${latestCount.current} times`);
+    }, 3000);
+  });
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
+
+**结论**
+> 组件内的函数(包括事件处理，effect，定时器， API调用)都会捕获定义它们时的 `state` 和 `props`;
+
+#### 同步状态，而不是响应生命周期函数 Synchronization, no LifeCycle
+> `useEffect` 允许你根据 `state` 和 `props` 来同步 react tree 之外的东西。react 会根据当前的 `state` 和 `props` 来同步的更新 DOM，mount 和 update 对于渲染并没有什么区别。
+
+最后，`useEffect` 的设计意图就是强迫开发者去关注数据流的变更，然后决定我们的 effect 该如何与状态同步。
 
 ### Rules of Hook
 1. 在顶部使用 hook，不要使用 hook 在条件判断，循环，嵌套函数。
 2. 只在 function component 中使用 hook，或者自定义 hook 中使用 hook, 不要在常规的 JavaScript 函数中使用 hook
-
-### 分类
-#### DOM 修改
-比如修改文档 title, 修改 DOM 节点属性。
-
-#### 监听
-用户代理网络变化，窗口大小变化
-
-#### 表单
-
-
 
 #### 缺点
 
@@ -110,5 +222,9 @@ const effectHook = () => {
 **链接**
 
 [making-sense-of-react-hooks](https://medium.com/@dan_abramov/making-sense-of-react-hooks-fdbde8803889)
+
 [rehooks](https://rehooks.com)
+
 [awesome-react-hooks](https://github.com/rehooks/awesome-react-hooks)
+
+[如何使用useEffect来获取数据](https://www.robinwieruch.de/react-hooks-fetch-data/)
