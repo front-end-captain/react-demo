@@ -81,6 +81,7 @@
 			"ignore": [".json"]
 		}],
 		"semi": ["error", "always"],
-		"import/prefer-default-export": ["warn"]
+    "import/prefer-default-export": ["warn"],
+    "no-plusplus": ["off"]
 	}
 }

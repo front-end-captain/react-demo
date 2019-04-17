@@ -228,3 +228,5 @@ function Counter() {
 [awesome-react-hooks](https://github.com/rehooks/awesome-react-hooks)
 
 [如何使用useEffect来获取数据](https://www.robinwieruch.de/react-hooks-fetch-data/)
+
+[hooks 是如何工作的](https://www.netlify.com/blog/2019/03/11/deep-dive-how-do-react-hooks-really-work/)
