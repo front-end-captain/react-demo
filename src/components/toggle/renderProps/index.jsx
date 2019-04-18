@@ -20,7 +20,7 @@ class UseToggle extends React.Component {
     const renderProps = { active, handleToggle: this.toggle };
 
     if (typeof children === "function") {
-      return children(renderProps);
+      return children(renderProps);``
     }
 
     return null;
