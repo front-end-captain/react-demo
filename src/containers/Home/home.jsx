@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 
-// import CountDown from "./../../components/CountDown/countDownWithHook.jsx";
-import CountDown from "./../../components/CountDown/countDownWithClass.jsx";
+import CountDown from "./../../components/CountDown/countDownWithHook.jsx";
+// import CountDown from "./../../components/CountDown/countDownWithClass.jsx";
 
 import HomeWrapper from "./home.css.js";
 
 const useTimer = (initialTime) => {
-  const [time, setTimer] = useState(initialTime);
+  const [time, setTimer] = React.useState(initialTime);
   const handleSetTimer = (newTime) => setTimer(newTime);
 
   return { time, handleSetTimer };
@@ -14,13 +14,14 @@ const useTimer = (initialTime) => {
 
 const initialTime = 5000;
 
-
 const Home = () => {
   const { time, handleSetTimer } = useTimer(0);
 
   const handleLessThenZero = () => {
     console.error("less then 0");
-    handleSetTimer(initialTime);
+
+    // TODO 时间小于等于 0，重置为 initialTime
+    handleSetTimer(5000);
   };
 
   return (
@@ -32,5 +33,32 @@ const Home = () => {
     </HomeWrapper>
   );
 };
+
+// class Home extends React.Component {
+//   state = {
+//     time: 0,
+//   };
+
+//   handleSetTimer = (newTime) => {
+//     this.setState({ time: newTime });
+//   };
+
+//   handleLessThenZero = () => {
+//     this.handleSetTimer(initialTime);
+//   }
+
+//   render() {
+//     const { time } = this.state;
+
+//     return (
+//       <HomeWrapper>
+//         <button type="button" onClick={() => this.handleSetTimer(initialTime)}>
+//           Set Timer
+//         </button>
+//         <CountDown remainingTime={time} onLessThenZero={this.handleLessThenZero} />
+//       </HomeWrapper>
+//     );
+//   }
+// }
 
 export default Home;
