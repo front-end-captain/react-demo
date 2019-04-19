@@ -1,22 +1,23 @@
-import React, { useState, useEffect, useRef, memo } from "react";
-import { parseRemainingMillisecond, STEP, INTERVAL } from "./utils.js";
+import React from "react";
+import { parseRemainingMillisecond } from "./utils.js";
+import useCountDown from "./useCountdown.js";
 
-const useInterval = (callback, delay) => {
-  const saveCallback = useRef();
-  let timer;
+// const useInterval = (callback, delay) => {
+//   const saveCallback = useRef();
+//   let timer;
 
-  useEffect(() => {
-    saveCallback.current = callback;
-  });
+//   useEffect(() => {
+//     saveCallback.current = callback;
+//   }, [callback]);
 
-  useEffect(() => {
-    timer = setInterval(() => {
-      saveCallback.current();
-    }, delay);
+//   useEffect(() => {
+//     timer = setInterval(() => {
+//       saveCallback.current();
+//     }, delay);
 
-    return () => clearInterval(timer);
-  }, []);
-};
+//     return () => clearInterval(timer);
+//   }, [delay]);
+// };
 
 // 接收一个时间戳(毫秒), 这个时间戳可能立即被传入，也有可能被稍后传入，比如从服务端获取，这个时间戳将会在每隔 20s 更新一次
 // 时间走到 0，调用外部回调函数，这个回调函可能会设置一个新的时间戳然后传入
@@ -30,37 +31,41 @@ const useInterval = (callback, delay) => {
  * @param callback
  * @returns {{ countdown: number }}
  */
-const useCountDown = (remainingTime, callback) => {
-  const [countdown, setCountDown] = useState(remainingTime);
+// const useCountDown = (remainingTime, callback) => {
+//   const [countdown, setCountDown] = useState(remainingTime);
 
-  useInterval(() => {
-    setCountDown(Math.abs(countdown) - STEP);
-  }, INTERVAL);
+//   let called = false;
 
-  // useEffect(() => {
-  //   setCountDown(remainingTime);
+//   useEffect(() => {
+//     setCountDown(remainingTime);
+//     called = false;
+//   }, [remainingTime]);
 
-  //   useInterval(() => {
-  //     setCountDown(Math.abs(countdown) - STEP);
-  //   }, INTERVAL);
-  // }, [remainingTime]);
+//   useInterval(() => {
+//     setCountDown(countdown > 0 ? Math.abs(countdown) - STEP : 0);
+//   }, INTERVAL);
 
-  if (countdown <= 0) {
-    callback();
-  }
+//   if (countdown <= 0 && !called) {
+//     callback();
+//     called = true;
+//   }
 
-  return { countdown };
-};
+//   return { countdown };
+// };
 
-const CountDown = memo(({ remainingTime, onLessThenZero }) => {
+const CountDown = ({ remainingTime, onLessThenZero }) => {
   if (remainingTime === 0) {
     return <strong>{parseRemainingMillisecond(0)}</strong>;
   }
 
-  const { countdown } = useCountDown(remainingTime, onLessThenZero);
+  const { countdown, running } = useCountDown(remainingTime);
+
+  if (!running) {
+    onLessThenZero();
+  }
 
   return <strong>{parseRemainingMillisecond(countdown)}</strong>;
-});
+};
 
 CountDown.defaultProps = {
   remainingTime: 0,

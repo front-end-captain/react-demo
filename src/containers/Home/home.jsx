@@ -12,7 +12,7 @@ import HomeWrapper from "./home.css.js";
 //   return { time, handleSetTimer };
 // };
 
-const initialTime = 5000;
+const initialTime = 5;
 
 // const Home = () => {
 //   const { time, handleSetTimer } = useTimer(0);
@@ -51,7 +51,7 @@ class Home extends React.Component {
 
   handleLessThenZero = () => {
     console.log("zero");
-    this.handleSetTimer(0);
+    // this.handleSetTimer(0);
   }
 
   render() {
