@@ -1,6 +1,5 @@
-import React from "react";
-import { parseRemainingMillisecond } from "./utils.js";
-import useCountDown from "./useCountdown.js";
+import React, { useEffect, useState } from "react";
+import { parseRemainingMillisecond, STEP, INTERVAL } from "./utils.js";
 
 // const useInterval = (callback, delay) => {
 //   const saveCallback = useRef();
@@ -31,38 +30,36 @@ import useCountDown from "./useCountdown.js";
  * @param callback
  * @returns {{ countdown: number }}
  */
-// const useCountDown = (remainingTime, callback) => {
-//   const [countdown, setCountDown] = useState(remainingTime);
+const useCountDown = (remainingTime, callback) => {
+  const [countdown, setCountDown] = useState(remainingTime);
+  let timer;
 
-//   let called = false;
+  useEffect(() => {
+    setCountDown(remainingTime);
+  }, [remainingTime]);
 
-//   useEffect(() => {
-//     setCountDown(remainingTime);
-//     called = false;
-//   }, [remainingTime]);
+  useEffect(() => {
+    timer = setInterval(() => {
+      setCountDown(countdown === 0 ? 0 : Math.abs(countdown) - STEP);
+    }, INTERVAL);
 
-//   useInterval(() => {
-//     setCountDown(countdown > 0 ? Math.abs(countdown) - STEP : 0);
-//   }, INTERVAL);
+    return () => clearInterval(timer);
+  });
 
-//   if (countdown <= 0 && !called) {
-//     callback();
-//     called = true;
-//   }
+  if (countdown === 0) {
+    callback();
+    clearInterval(timer);
+  }
 
-//   return { countdown };
-// };
+  return { countdown };
+};
 
-const CountDown = ({ remainingTime, onLessThenZero }) => {
+const CountDown = ({ remainingTime, onEqualZero }) => {
   if (remainingTime === 0) {
     return <strong>{parseRemainingMillisecond(0)}</strong>;
   }
 
-  const { countdown, running } = useCountDown(remainingTime);
-
-  if (!running) {
-    onLessThenZero();
-  }
+  const { countdown } = useCountDown(remainingTime, onEqualZero);
 
   return <strong>{parseRemainingMillisecond(countdown)}</strong>;
 };

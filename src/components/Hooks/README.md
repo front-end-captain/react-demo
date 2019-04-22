@@ -230,3 +230,18 @@ function Counter() {
 [如何使用useEffect来获取数据](https://www.robinwieruch.de/react-hooks-fetch-data/)
 
 [hooks 是如何工作的](https://www.netlify.com/blog/2019/03/11/deep-dive-how-do-react-hooks-really-work/)
+
+
+## 如何编写可重用的，可扩展的组件
+> 随着 React Hooks 的发布，`useState` 赋予了函数式组件也可以拥有内部状态的功能, `useEffect` 给开发者提供了新的管理副作用的思路。`useReducer` 结合 `useContext` 以及 Context API 则可以使我们像 redux 那样来管理局部或者全局共享的状态。同时也促使我们去思考如何使用这些 hook 设计可重用的、可扩展的、具有弹性的组件。除了代码层面的 linter，是否有其他的一些原则或者方法论。
+
+#### 任何时候都不要去阻碍数据流
+一个组件的数据源总是来自其接收的 props 或者其内部的 state。一个常见的做法是我们时常会把组件接收的 props 作为组件自己的 state，可能 props 会在稍后进行更新，但是渲染并没有响应这次 props 的更新，我们会在 `componentDidUpdate` 或者 `componentWillReceiveProps` 去更新组件内部状态，以达到 props 变了，渲染也应该变化的目的。虽然解决了问题，但是代码的管理度一下就上来了。所以我们应该避免编写 **介于受控或者非受控之间的组件**。无论将组件编写为类或者函数，都应该为 side effects 和 render 响应所有的 props 和 state 变化。
+
+#### 时刻准备好渲染
+一个组件从父组件那里接受了一些 props，然后可能在某一个 props 变化的时候去更新了的组件内部状态(这个状态即变成了派生状态)。当然我们可以通过 `componentWillReceiveProps` 来对具体的 props 比对然后再决定是否更新状态，但是父组件因为其他的原因发生了重渲染，就会导致这个派生状态的非正常更新。同时我们需要使用 `shouldComponentUpdate` 或者 `PureComponent` 来避免子组件的不必要渲染。但是这些方式不应该去控制组件的行为，而是用于性能优化。如果因为删除了优化，就破坏了组件的正常工作，那这个组件无疑时脆弱的。所以应该**避免使用派生状态**。
+
+#### 没有单例组件
+应用中的 Header 应该全局唯一的。两个页面之间切换，我们都假定 Header 都是唯一的。但是如果同时渲染了两个 Header 组件实例呢？假设 Header 组件中，在 `componentWillMount` 时做了一些 "清理" 全局状态的事情，这个时候应用还会正常工作么？**显示或者隐藏一棵组件树，不应该破坏这棵树之外的组件树树**。
+
+#### 隔离本地状态

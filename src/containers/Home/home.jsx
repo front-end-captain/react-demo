@@ -12,7 +12,7 @@ import HomeWrapper from "./home.css.js";
 //   return { time, handleSetTimer };
 // };
 
-const initialTime = 5;
+const initialTime = 5000;
 
 // const Home = () => {
 //   const { time, handleSetTimer } = useTimer(0);
@@ -62,7 +62,7 @@ class Home extends React.Component {
         <button type="button" onClick={() => this.handleSetTimer(initialTime)}>
           Set Timer
         </button>
-        <CountDown remainingTime={time} onLessThenZero={this.handleLessThenZero} />
+        <CountDown remainingTime={time} onEqualZero={this.handleLessThenZero} />
       </HomeWrapper>
     );
   }
