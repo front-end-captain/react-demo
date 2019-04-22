@@ -1,13 +1,16 @@
 import React, { Component } from "react";
 import { hot } from "react-hot-loader/root";
 
-import Home from "./containers/Home/home.jsx";
+import Header from "./containers/Header/header.jsx";
+import NotFound from "./components/NotFound/index.jsx";
+import AppRouter from "./router/index.js";
+import routes from "./router/config.js";
 
 import "./App.css";
 
 class App extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = { hasError: false };
   }
 
@@ -20,7 +23,16 @@ class App extends Component {
 
   render() {
     const { hasError } = this.state;
-    return hasError ? <div>something wrong</div> : <Home />;
+    if (hasError) {
+      return <div>something wrong</div>;
+    }
+
+    return (
+      <>
+        <Header />
+        <AppRouter notFound={NotFound} routes={routes} />
+      </>
+    );
   }
 }
 
