@@ -1,5 +1,6 @@
 import Home from "./../containers/Home/home.jsx";
 import User from "./../containers/User/user.jsx";
+import About from "./../containers/About/index.jsx";
 
 import Team from "./../components/Team/index.jsx";
 import Invoices from "./../components/Invoices/index.jsx";
@@ -22,6 +23,10 @@ const routes = [
         component: Invoices,
       },
     ],
+  },
+  {
+    path: "about",
+    component: About,
   },
 ];
 
